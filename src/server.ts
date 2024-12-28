@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import testRoutes from './routes/testRoute';
 import { connectDB } from './config/database';
 import { swaggerDocs } from './config/swagger';
+import taskRoute from './routes/taskRoute';
 
 // Config
 dotenv.config();
@@ -20,6 +21,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/', testRoutes);
+app.use('/api/tasks', taskRoute);
 
 // DB Connection
 connectDB()

@@ -19,7 +19,7 @@ const swaggerOptions = {
 };
 
 const specs = swaggerJsdoc(swaggerOptions);
-export const swaggerDocs = (app: any, port: string) => {
+export const swaggerDocs = (app: any, port: string): void => {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
   console.log(`Docs available at http://localhost:${port}/api-docs`);
 };
