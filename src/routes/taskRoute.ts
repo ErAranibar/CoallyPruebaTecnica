@@ -2,6 +2,7 @@ import { Router } from 'express';
 import * as TaskController from '../controllers/taskController';
 import { createTaskValidation, updateTaskValidation } from '../middlewares/taskRouteValidation';
 import { validate } from '../middlewares/validationMiddleware';
+import { isAuthenticated } from '../middlewares/authMiddleware';
 
 const taskRoute: Router = Router();
 
@@ -9,6 +10,8 @@ const taskRoute: Router = Router();
  * @swagger
  * /api/tasks/add:
  *   post:
+ *     tags: 
+ *      - Tasks
  *     summary: Crear una nueva tarea
  *     description: Crea una nueva tarea con título, descripción y estado
  *     operationId: createTask
@@ -51,12 +54,14 @@ const taskRoute: Router = Router();
  *       500:
  *         description: Error al crear la tarea
  */
-taskRoute.post('/add', createTaskValidation, validate, TaskController.createTask);
+taskRoute.post('/add', isAuthenticated, createTaskValidation, validate, TaskController.createTask);
 
 /**
  * @swagger
  * /tasks/all:
  *   get:
+ *     tags: 
+ *      - Tasks
  *     summary: Obtener todas las tareas
  *     description: Obtiene todas las tareas almacenadas
  *     operationId: getAllTasks
@@ -100,13 +105,15 @@ taskRoute.post('/add', createTaskValidation, validate, TaskController.createTask
  *       500:
  *         description: Error al obtener las tareas
  */
-taskRoute.get('/all', TaskController.getAllTasks);
+taskRoute.get('/all', isAuthenticated, TaskController.getAllTasks);
 
 
 /**
  * @swagger
  * /api/tasks/getById/{id}:
  *   get:
+ *     tags: 
+ *      - Tasks
  *     summary: Obtener una tarea por ID
  *     description: Obtiene una tarea específica por su ID
  *     operationId: getTaskById
@@ -137,12 +144,14 @@ taskRoute.get('/all', TaskController.getAllTasks);
  *       500:
  *         description: Error al obtener la tarea
  */
-taskRoute.get('/getById/:id', TaskController.getTaskById);
+taskRoute.get('/getById/:id', isAuthenticated, TaskController.getTaskById);
 
 /**
  * @swagger
  * /api/tasks/update/{id}:
  *   put:
+ *     tags: 
+ *      - Tasks
  *     summary: Actualizar una tarea
  *     description: Actualiza una tarea existente por su ID
  *     operationId: updateTask
@@ -194,12 +203,14 @@ taskRoute.get('/getById/:id', TaskController.getTaskById);
  *       500:
  *         description: Error al actualizar la tarea
  */
-taskRoute.put('/update/:id', updateTaskValidation, validate, TaskController.updateTask);
+taskRoute.put('/update/:id', isAuthenticated, updateTaskValidation, validate, TaskController.updateTask);
 
 /**
  * @swagger
  * /api/tasks/delete/{id}:
  *   delete:
+ *     tags: 
+ *      - Tasks
  *     summary: Eliminar una tarea
  *     description: Elimina una tarea por su ID
  *     operationId: deleteTask
@@ -218,6 +229,6 @@ taskRoute.put('/update/:id', updateTaskValidation, validate, TaskController.upda
  *       500:
  *         description: Error al eliminar la tarea
  */
-taskRoute.delete('/delete/:id', TaskController.deleteTask);
+taskRoute.delete('/delete/:id', isAuthenticated, TaskController.deleteTask);
 
 export default taskRoute;

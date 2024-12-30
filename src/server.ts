@@ -6,6 +6,7 @@ import testRoutes from './routes/testRoute';
 import { connectDB } from './config/database';
 import { swaggerDocs } from './config/swagger';
 import taskRoute from './routes/taskRoute';
+import authRoute from './routes/authRoute';
 
 // Config
 dotenv.config();
@@ -22,6 +23,7 @@ app.use(express.json());
 // Routes
 app.use('/api/', testRoutes);
 app.use('/api/tasks', taskRoute);
+app.use('/api/auth', authRoute);
 
 // Test Conditional: it will only start the server and connect to real db if is not a test
 if (process.env.NODE_ENV !== 'test') {
