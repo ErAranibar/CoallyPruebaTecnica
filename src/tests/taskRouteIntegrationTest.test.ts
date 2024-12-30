@@ -1,6 +1,9 @@
 import request from 'supertest';
 import app from '../server';
 import mongoose from 'mongoose';
+import { registerAndLogin } from '../utils/test.utils';
+
+let token: string;
 
 afterEach(async () => {
   const collections = await mongoose.connection.db?.collections();
@@ -10,11 +13,15 @@ afterEach(async () => {
 });
 
 describe('Task API Integration Tests', () => {
+  beforeAll(async () => {
+    token = await registerAndLogin(app);
+  });
 
   describe('Task Creation', () => {
     it('should return 400 if title is missing', async () => {
       const response = await request(app)
         .post('/api/tasks/add')
+        .set('Authorization', `${token}`)
         .send({ description: 'Test task1' });
 
       expect(response.status).toBe(400);
@@ -24,6 +31,7 @@ describe('Task API Integration Tests', () => {
     it('should return 400 if title is not a string', async () => {
       const response = await request(app)
         .post('/api/tasks/add')
+        .set('Authorization', `${token}`)
         .send({ title: 123, description: 'Test task' });
 
       expect(response.status).toBe(400);
@@ -33,6 +41,7 @@ describe('Task API Integration Tests', () => {
     it('should return 400 if completed is not a boolean', async () => {
       const response = await request(app)
         .post('/api/tasks/add')
+        .set('Authorization', `${token}`)
         .send({ title: '123', description: 'Test task', completed: 'trued' });
 
       expect(response.status).toBe(400);
@@ -42,6 +51,7 @@ describe('Task API Integration Tests', () => {
     it('should successfully create a task with required fields and store it in the database', async () => {
       const response = await request(app)
         .post('/api/tasks/add')
+        .set('Authorization', `${token}`)
         .send({ title: 'Test Task', description: 'Valid task description' });
 
       expect(response.status).toBe(201);
@@ -61,14 +71,17 @@ describe('Task API Integration Tests', () => {
     it('should return all tasks', async () => {
       await request(app)
         .post('/api/tasks/add')
+        .set('Authorization', `${token}`)
         .send({ title: 'Task 1', description: 'Description 1' });
 
       await request(app)
         .post('/api/tasks/add')
+        .set('Authorization', `${token}`)
         .send({ title: 'Task 2', description: 'Description 2' });
 
       const response = await request(app)
-        .get('/api/tasks/all');
+        .get('/api/tasks/all')
+        .set('Authorization', `${token}`);
 
       expect(response.status).toBe(200);
       expect(response.body.length).toBeGreaterThan(1);
@@ -79,12 +92,14 @@ describe('Task API Integration Tests', () => {
     it('should return a task by ID', async () => {
       const taskResponse = await request(app)
         .post('/api/tasks/add')
+        .set('Authorization', `${token}`)
         .send({ title: 'Task By ID', description: 'Description for task by id' });
 
       const taskId = taskResponse.body._id;
 
       const response = await request(app)
-        .get(`/api/tasks/getById/${taskId}`);
+        .get(`/api/tasks/getById/${taskId}`)
+        .set('Authorization', `${token}`);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('_id', taskId);
@@ -94,7 +109,9 @@ describe('Task API Integration Tests', () => {
 
     it('should return 404 if task not found', async () => {
       const response = await request(app)
-        .get('/api/tasks/getById/invalidid');
+        .get('/api/tasks/getById/invalidid')
+        .set('Authorization', `${token}`);
+
       expect(response.status).toBe(404);
       expect(response.body.error).toBe('Tarea no encontrada');
     });
@@ -104,12 +121,14 @@ describe('Task API Integration Tests', () => {
     it('should update a task successfully', async () => {
       const taskResponse = await request(app)
         .post('/api/tasks/add')
+        .set('Authorization', `${token}`)
         .send({ title: 'Task to Update', description: 'Description' });
 
       const taskId = taskResponse.body._id;
 
       const response = await request(app)
         .put(`/api/tasks/update/${taskId}`)
+        .set('Authorization', `${token}`)
         .send({ title: 'Updated Task', description: 'Updated description', completed: true });
 
       expect(response.status).toBe(200);
@@ -126,6 +145,7 @@ describe('Task API Integration Tests', () => {
     it('should return 404 if task to update is not found', async () => {
       const response = await request(app)
         .put('/api/tasks/update/invalidid')
+        .set('Authorization', `${token}`)
         .send({ title: 'Updated Task', description: 'Updated description' });
 
       expect(response.status).toBe(404);
@@ -137,12 +157,14 @@ describe('Task API Integration Tests', () => {
     it('should delete a task successfully', async () => {
       const taskResponse = await request(app)
         .post('/api/tasks/add')
+        .set('Authorization', `${token}`)
         .send({ title: 'Task to Delete', description: 'Description' });
 
       const taskId = taskResponse.body._id;
 
       const response = await request(app)
-        .delete(`/api/tasks/delete/${taskId}`);
+        .delete(`/api/tasks/delete/${taskId}`)
+        .set('Authorization', `${token}`);
 
       expect(response.status).toBe(200);
       expect(response.body.message).toBe('Tarea eliminada');
@@ -153,7 +175,8 @@ describe('Task API Integration Tests', () => {
 
     it('should return 404 if task to delete is not found', async () => {
       const response = await request(app)
-        .delete('/api/tasks/delete/invalidid');
+        .delete('/api/tasks/delete/invalidid')
+        .set('Authorization', `${token}`);
 
       expect(response.status).toBe(404);
       expect(response.body.error).toBe('Tarea no encontrada');

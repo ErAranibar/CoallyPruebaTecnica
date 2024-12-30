@@ -6,12 +6,12 @@ describe('Task Repository', () => {
   let taskId: string;
 
   beforeAll(async () => {
-    const task = await createTask('Test Task', 'Test description', false);
+    const task = await createTask('Test Task', 'Test description', false, 'testUserId');
     taskId = task._id?.toString() ?? '';
   });
 
   it('should create a task', async () => {
-    const task = await createTask('New Task', 'New description', true);
+    const task = await createTask('New Task', 'New description', true, 'testUserId');
 
     expect(task).toHaveProperty('title', 'New Task');
     expect(task).toHaveProperty('description', 'New description');
@@ -47,7 +47,7 @@ describe('Task Repository', () => {
   });
 
   it('should delete a task', async () => {
-    const taskToDelete = await createTask('Task to delete', 'Description', false);
+    const taskToDelete = await createTask('Task to delete', 'Description', false, 'testUserId');
     const deletedTask = await deleteTask(taskToDelete._id?.toString() || '');
     expect(deletedTask).toHaveProperty('_id', taskToDelete._id || '');
   });

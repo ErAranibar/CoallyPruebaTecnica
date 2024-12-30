@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import Task, { ITask } from '../models/task.model';
 
-export const createTask = async (title: string, description?: string, completed: boolean = false): Promise<ITask> => {
-  const task = new Task({ title, description, completed });
+export const createTask = async (title: string, description?: string, completed: boolean = false, userId?: string): Promise<ITask> => {
+  const task = new Task({ title, description, completed, userId });
   await task.save();
   return task;
 };

@@ -6,6 +6,7 @@ export interface ITask {
   description?: string;
   completed: boolean;
   createdAt: Date;
+  userId: string;
 }
 
 const taskSchema = new Schema<ITask>(
@@ -14,6 +15,7 @@ const taskSchema = new Schema<ITask>(
     description: { type: String, required: false },
     completed: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
+    userId: { type: String, required: true },
   },
   { timestamps: true }
 );
