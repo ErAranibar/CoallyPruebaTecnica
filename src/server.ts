@@ -23,12 +23,17 @@ app.use(express.json());
 app.use('/api/', testRoutes);
 app.use('/api/tasks', taskRoute);
 
-// DB Connection
-connectDB()
-  .then(() => console.log('Connected to DB'))
-  .catch(err => console.log(err));
+// Test Conditional: it will only start the server and connect to real db if is not a test
+if (process.env.NODE_ENV !== 'test') {
+  // DB Connection
+  connectDB()
+    .then(() => console.log('Connected to DB'))
+    .catch(err => console.log(err));
+  
+  // Server
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+}
 
-// Server
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+export default app;
